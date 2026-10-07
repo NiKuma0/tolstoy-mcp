@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/@anthropic-ai/mcpb/schemas/mcpb-manifest-v0.3.schema.json",
+  "manifest_version": "0.3",
+  "name": "tolstoy",
+  "display_name": "Память Толстого",
+  "version": "0.1.0",
+  "description": "Поиск по 90-томному собранию сочинений Л. Н. Толстого, его дневникам, письмам и воспоминаниям современников",
+  "long_description": "Локальная «память» Льва Толстого для Claude: сочинения, дневники, записные книжки и письма из 90-томного Полного собрания сочинений, дневники и воспоминания современников (Гусев, Гольденвейзер, Маковицкий, С. А. Толстая) и примечания редакторов.\n\nИнструмент recall ищет фрагменты по смыслу и по словам, read_document дочитывает документ. Промпт tolstoy предлагает Claude говорить от лица Толстого и ссылаться на источники.\n\nВсё работает локально: база текстов входит в расширение, а модель bge-m3 для поиска по смыслу (590 МБ) скачивается с Hugging Face при первом запуске.",
+  "author": {
+    "name": "nikuma"
+  },
+  "license": "MIT",
+  "keywords": ["tolstoy", "толстой", "literature", "russian", "rag"],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"]
+    }
+  },
+  "tools": [
+    {
+      "name": "recall",
+      "description": "Найти фрагменты корпуса Толстого по теме (гибридный поиск: смысл + слова)"
+    },
+    {
+      "name": "read_document",
+      "description": "Прочитать документ (письмо, дневниковую запись, главу) с шапкой"
+    }
+  ],
+  "prompts_generated": true,
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=22.13.0"
+    }
+  }
+}

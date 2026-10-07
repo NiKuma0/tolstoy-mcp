@@ -1,0 +1,89 @@
+name: Release
+
+# git tag v0.1.0 && git push --tags → .mcpb под каждую ОС в GitHub Release и пакет в npm
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: Tag matches package.json version
+        run: test "v$(node -p 'require("./package.json").version')" = "$GITHUB_REF_NAME"
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm run build
+      # код не зависит от платформы: все пакеты собираются здесь, а проверяются ниже на своих ОС
+      - run: npm run pack:mcpb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mcpb
+          path: build/*.mcpb
+          if-no-files-found: error
+
+  smoke:
+    needs: pack
+    name: smoke (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: linux }
+          - { os: ubuntu-24.04-arm, target: linux }
+          - { os: windows-latest, target: win32 }
+          - { os: windows-11-arm, target: win32 }
+          - { os: macos-latest, target: darwin }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v5
+        with:
+          name: mcpb
+          path: build
+      - run: npx -y @anthropic-ai/mcpb unpack build/tolstoy-*-${{ matrix.target }}.mcpb build/unpacked
+      - run: node scripts/smoke.mjs build/unpacked
+
+  github-release:
+    needs: smoke
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: mcpb
+          path: build
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: build/*.mcpb
+          generate_release_notes: true
+
+  npm:
+    needs: smoke
+    runs-on: ubuntu-latest
+    # публикация через trusted publishing (OIDC): на npmjs.com в настройках пакета указать этот репозиторий
+    # и release.yml; токен не нужен
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm publish --provenance --access public

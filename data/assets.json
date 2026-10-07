@@ -1,0 +1,30 @@
+{
+  "dataBaseUrl": "https://github.com/OWNER/tolstoy-mcp/releases/download/data-v1",
+  "files": {
+    "db": {
+      "url": "https://github.com/OWNER/tolstoy-mcp/releases/download/data-v1/tolstoy-v1.db.gz",
+      "file": "tolstoy-v1.db",
+      "gzip": true,
+      "bytes": 197632602,
+      "sha256": "7293c816dc0a391a8f4017c085b9bbb37edf780f66cddc4a6ffa89e54396293b"
+    },
+    "model": {
+      "url": "https://huggingface.co/Xenova/bge-m3/resolve/4de13258303883538bd53b696b452bf8099f0858/onnx/model_quantized.onnx",
+      "file": "bge-m3/model_quantized.onnx",
+      "bytes": 569694530,
+      "sha256": "0826f8c1ab9edf1801db86c61919d4d108e8bfc0b809ec823ad366882ff0b77d"
+    },
+    "tokenizer": {
+      "url": "https://huggingface.co/Xenova/bge-m3/resolve/4de13258303883538bd53b696b452bf8099f0858/tokenizer.json",
+      "file": "bge-m3/tokenizer.json",
+      "bytes": 17082821,
+      "sha256": "6710678b12670bc442b99edc952c4d996ae309a7020c1fa0096dd245c2faf790"
+    },
+    "tokenizerConfig": {
+      "url": "https://huggingface.co/Xenova/bge-m3/resolve/4de13258303883538bd53b696b452bf8099f0858/tokenizer_config.json",
+      "file": "bge-m3/tokenizer_config.json",
+      "bytes": 1173,
+      "sha256": "7e4c1cc848840aeccdd763458c18dd525eb0f795c992e00ebe9c28554e7db2d4"
+    }
+  }
+}

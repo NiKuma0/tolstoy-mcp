@@ -1,0 +1,55 @@
+{
+  "name": "tolstoy-mcp",
+  "version": "0.1.0",
+  "description": "MCP-сервер «Память Толстого»: поиск по 90-томному собранию сочинений, дневникам и письмам Л. Н. Толстого и воспоминаниям современников",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "build:db": "tsx scripts/build-db.ts",
+    "pack:mcpb": "tsx scripts/pack-mcpb.ts"
+  },
+  "keywords": [
+    "mcp",
+    "mcpb",
+    "tolstoy",
+    "толстой",
+    "rag"
+  ],
+  "author": "nikuma",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@huggingface/tokenizers": "^0.2.0",
+    "@modelcontextprotocol/server": "^2.3.1",
+    "env-paths": "^4.0.0",
+    "onnxruntime-node": "^1.30.0",
+    "proper-lockfile": "^4.1.2",
+    "snowball-stemmers": "^0.6.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@anthropic-ai/mcpb": "^2.1.2",
+    "@biomejs/biome": "^2.5.15",
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@types/node": "^24.19.1",
+    "@types/proper-lockfile": "^4.1.4",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "bin": {
+    "tolstoy-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "main": "dist/index.js"
+}
