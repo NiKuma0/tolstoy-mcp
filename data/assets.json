@@ -1,8 +1,8 @@
 {
-  "dataBaseUrl": "https://github.com/OWNER/tolstoy-mcp/releases/download/data-v1",
+  "dataBaseUrl": "https://github.com/nikuma0/tolstoy-mcp/releases/download/data-v1",
   "files": {
     "db": {
-      "url": "https://github.com/OWNER/tolstoy-mcp/releases/download/data-v1/tolstoy-v1.db.gz",
+      "url": "https://github.com/nikuma0/tolstoy-mcp/releases/download/data-v1/tolstoy-v1.db.gz",
       "file": "tolstoy-v1.db",
       "gzip": true,
       "bytes": 197632602,
