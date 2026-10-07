@@ -1,6 +1,6 @@
 name: Release
 
-# git tag v0.1.0 && git push --tags → .mcpb под каждую ОС в GitHub Release и пакет в npm
+# git tag v0.1.0 && git push --tags → .mcpb под каждую ОС в GitHub Release
 on:
   push:
     tags: ["v*"]
@@ -70,20 +70,3 @@ jobs:
           files: build/*.mcpb
           generate_release_notes: true
 
-  npm:
-    needs: smoke
-    runs-on: ubuntu-latest
-    # публикация через trusted publishing (OIDC): на npmjs.com в настройках пакета указать этот репозиторий
-    # и release.yml; токен не нужен
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org
-      - run: npm ci --ignore-scripts
-      - run: npm run build
-      - run: npm publish --provenance --access public

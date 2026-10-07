@@ -17,11 +17,13 @@
 [Releases](../../releases) и открыть его двойным щелчком (или «Настройки → Расширения → Установить
 расширение»). Пакеты: `darwin` (Apple Silicon), `win32` (x64 и ARM), `linux` (x64 и ARM).
 
-**Claude Code и другие MCP-клиенты** (нужен Node.js ≥ 22.13):
+**Claude Code и другие MCP-клиенты** (нужен Node.js ≥ 22.13), из исходников:
 
 ```bash
-claude mcp add tolstoy -- npx -y tolstoy-mcp
-npx -y tolstoy-mcp download        # по желанию: скачать данные заранее, а не при первом вопросе
+git clone https://github.com/nikuma0/tolstoy-mcp && cd tolstoy-mcp
+npm ci --ignore-scripts && npm run build
+claude mcp add tolstoy -- node "$PWD/dist/index.js"
+node dist/index.js download        # по желанию: скачать данные заранее, а не при первом вопросе
 ```
 
 Пока данные скачиваются, инструменты отвечают, сколько осталось. Данные лежат в системном
@@ -29,9 +31,9 @@ npx -y tolstoy-mcp download        # по желанию: скачать дан�
 `%LOCALAPPDATA%\tolstoy-mcp`); переопределить — переменной `TOLSTOY_DATA_DIR`.
 
 ```bash
-npx tolstoy-mcp info                                       # что скачано и где
-npx tolstoy-mcp search "что Толстой писал Фету о Шопенгауэре" --top 5
-npx tolstoy-mcp search "непротивление злу насилием" --mine  # только тексты самого Толстого
+node dist/index.js info                                       # что скачано и где
+node dist/index.js search "что Толстой писал Фету о Шопенгауэре" --top 5
+node dist/index.js search "непротивление злу насилием" --mine  # только тексты самого Толстого
 ```
 
 ## Как устроено
@@ -83,8 +85,7 @@ npm run dev -- search "Ясная Поляна"
 
 `npm version patch && git push --follow-tags`. Workflow `release.yml` собирает `.mcpb` под каждую ОС,
 проверяет каждый на своей платформе (`scripts/smoke.mjs`: нативный onnxruntime грузится, сервер отвечает
-на `initialize` и `tools/list`), выкладывает их в GitHub Release и публикует пакет в npm
-(trusted publishing: репозиторий и `release.yml` нужно один раз указать в настройках пакета на npmjs.com).
+на `initialize` и `tools/list`) и выкладывает их в GitHub Release. В npm пакет не публикуется.
 
 ## Лицензия
 
