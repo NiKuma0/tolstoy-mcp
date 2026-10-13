@@ -65,7 +65,7 @@ jobs:
         with:
           name: mcpb
           path: build
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: build/*.mcpb
           generate_release_notes: true
