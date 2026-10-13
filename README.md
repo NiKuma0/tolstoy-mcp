@@ -13,11 +13,18 @@
 
 ## Установка
 
-**Claude Desktop.** Скачать `tolstoy-<версия>-<ОС>.mcpb` со страницы
-[Releases](../../releases) и открыть его двойным щелчком (или «Настройки → Расширения → Установить
-расширение»). Пакеты: `darwin` (Apple Silicon), `win32` (x64 и ARM), `linux` (x64 и ARM).
+### Claude Desktop
 
-**Claude Code и другие MCP-клиенты** (нужен Node.js ≥ 22.13), из исходников:
+1. Скачайте `tolstoy-<версия>-<ОС>.mcpb` для своей системы со страницы [Releases](../../releases):
+   `darwin` — macOS (Apple Silicon), `win32` — Windows (x64 и ARM), `linux` — Linux (x64 и ARM).
+2. Откройте Claude Desktop → **Settings → Extensions**.
+3. Перетащите скачанный `.mcpb` в окно и нажмите **Install**.
+
+![Установка расширения в Claude Desktop](./media/guide.gif)
+
+### Claude Code и другие MCP-клиенты
+
+Из исходников, нужен Node.js ≥ 22.13:
 
 ```bash
 git clone https://github.com/nikuma0/tolstoy-mcp && cd tolstoy-mcp
@@ -38,15 +45,22 @@ node dist/index.js search "непротивление злу насилием" -
 
 ## Как устроено
 
-```
-TEI/XML ──tei-importer──▶ PostgreSQL + pgvector ──tei-importer export──▶ export/*.jsonl.gz + chunks.f32
-   (репозиторий TEI, importer/: парсинг, чанки, векторы bge-m3)                    │
-                                                                       npm run build:db
-                                                                                  ▼
-          GitHub Release data-v1 ◀──────────────── tolstoy-v1.db.gz (SQLite: тексты, FTS5, int8-векторы)
-                     │ первый запуск: скачать и проверить sha256
-                     ▼
-Claude ◀──stdio──▶ tolstoy-mcp: bge-m3 (ONNX int8) векторизует запрос → перебор int8-векторов + FTS5 → RRF
+Корпус TEI/XML заранее разобран на фрагменты, векторизован моделью bge-m3 и сложен в одну базу SQLite.
+На запрос сервер ищет параллельно по смыслу и по словам и сливает результаты:
+
+```mermaid
+flowchart LR
+    TEI["TEI/XML<br/>«Весь Толстой»"] -. "заранее" .-> DB[("SQLite<br/>тексты · FTS5 · векторы")]
+
+    Claude["Claude"] <-->|stdio| MCP["tolstoy-mcp"]
+    MCP -->|запрос| EMB["bge-m3 (ONNX int8)<br/>вектор запроса"]
+    EMB --> VEC["поиск по смыслу<br/>int8-векторы"]
+    MCP -->|запрос| FTS["поиск по словам<br/>FTS5 + стемминг"]
+    DB --- VEC
+    DB --- FTS
+    VEC --> RRF["RRF<br/>слияние"]
+    FTS --> RRF
+    RRF -->|фрагменты| MCP
 ```
 
 - **SQLite** через встроенный `node:sqlite`: без нативных аддонов, поэтому работает и во встроенном
